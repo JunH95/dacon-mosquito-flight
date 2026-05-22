@@ -109,9 +109,11 @@ def generate_error_report(model_path: str, data_dir: str, output_path: str, fold
 
 if __name__ == "__main__":
     # 가장 최근에 학습된 1-Fold 모델을 찾아서 분석
-    model_dir = '../models'
-    data_dir = '../data'
-    report_dir = '../reports'
+    # 스크립트 파일(src/evaluate.py)의 상위 폴더(프로젝트 루트)를 기준으로 경로 절대값 설정
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    model_dir = os.path.join(base_dir, 'models')
+    data_dir = os.path.join(base_dir, 'data')
+    report_dir = os.path.join(base_dir, 'reports')
     
     if os.path.exists(model_dir):
         model_files = [f for f in os.listdir(model_dir) if f.endswith('fold1.pth')]
