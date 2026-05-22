@@ -18,6 +18,7 @@
 4. **Validation:** Implement K-Fold Cross Validation.
 
 ## 3. Constraints
+- **Mandatory Iteration Logging:** 모델 튜닝이나 피처 엔지니어링 등 중요한 성능 업그레이드를 수행할 때마다, 반드시 `reports/model_iteration_log.md` 파일에 해당 버전(버전 번호, 점수, 변경 사항, 논리적 이유)을 기록하여 모델 발전 역사를 보존해야 합니다.
 - **Resource Awareness:** Always optimize PyTorch data loaders (use multiple workers, efficient memory pinning) since the user relies on Google Colab for training.
 - **WandB Tracking:** Enforce Weights & Biases logging for every neural network experiment.
 - **Language:** Code/Variables in English. Comments in Korean.
