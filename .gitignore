@@ -20,7 +20,7 @@ ENV/
 
 # Data and Models
 data/
-models/
+/models/
 *.csv
 *.xlsx
 *.parquet
