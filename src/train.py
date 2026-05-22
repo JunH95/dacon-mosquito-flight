@@ -11,6 +11,15 @@ from torch.utils.data import DataLoader, Subset
 from data_loader import MosquitoTrajectoryDataset
 from models.dnn_model import MosquitoLSTM
 
+def r_hit(pred: torch.Tensor, true: torch.Tensor, threshold: float = 0.01) -> float:
+    """
+    Dacon R-Hit@1cm 평가 산식
+    pred, true: (batch_size, 3) 형태의 텐서
+    """
+    distances = torch.norm(pred - true, dim=-1)
+    hits = (distances <= threshold).float()
+    return hits.mean().item()
+
 def seed_everything(seed: int = 42):
     """
     재현성(Reproducibility)을 위한 랜덤 시드 고정
@@ -66,13 +75,14 @@ def train_model(config: dict = None):
             criterion = nn.MSELoss()
             optimizer = optim.Adam(model.parameters(), lr=cfg.learning_rate)
             
-            best_val_loss = float('inf')
+            best_val_r_hit = -1.0 # R-Hit은 높을수록 좋음
             model_path = os.path.join(save_dir, f'lstm_model_{run.id}_fold{fold+1}.pth')
             
             # Epoch 반복
             for epoch in range(cfg.epochs):
                 model.train()
                 epoch_loss = 0.0
+                epoch_r_hit = 0.0
                 
                 # Training Loop
                 pbar = tqdm(train_loader, desc=f"[Fold {fold+1}] Epoch {epoch+1}/{cfg.epochs}")
@@ -88,13 +98,16 @@ def train_model(config: dict = None):
                     optimizer.step()
                     
                     epoch_loss += loss.item()
+                    epoch_r_hit += r_hit(preds.detach(), y_batch.detach())
                     pbar.set_postfix({'loss': loss.item()})
                     
                 avg_train_loss = epoch_loss / len(train_loader)
+                avg_train_r_hit = epoch_r_hit / len(train_loader)
                 
                 # Validation Loop
                 model.eval()
                 val_loss = 0.0
+                val_r_hit = 0.0
                 with torch.no_grad():
                     for X_val, y_val in val_loader:
                         X_val = X_val.to(device)
@@ -102,26 +115,30 @@ def train_model(config: dict = None):
                         val_preds = model(X_val)
                         v_loss = criterion(val_preds, y_val)
                         val_loss += v_loss.item()
+                        val_r_hit += r_hit(val_preds, y_val)
                         
                 avg_val_loss = val_loss / len(val_loader)
+                avg_val_r_hit = val_r_hit / len(val_loader)
                 
                 # 로그 기록
                 wandb.log({
                     f"fold_{fold+1}_train_loss": avg_train_loss,
+                    f"fold_{fold+1}_train_r_hit": avg_train_r_hit,
                     f"fold_{fold+1}_val_loss": avg_val_loss,
+                    f"fold_{fold+1}_val_r_hit": avg_val_r_hit,
                     "epoch": epoch + 1
                 })
                 
-                # 가장 성능이 좋은(Validation Loss가 가장 낮은) 시점의 가중치만 저장
-                if avg_val_loss < best_val_loss:
-                    best_val_loss = avg_val_loss
+                # 가장 성능이 좋은(Validation R-Hit 점수가 높은) 시점의 가중치만 저장
+                if avg_val_r_hit > best_val_r_hit:
+                    best_val_r_hit = avg_val_r_hit
                     torch.save(model.state_dict(), model_path)
             
-            print(f"\n=> Fold {fold+1} Best Validation Loss: {best_val_loss:.5f}")
-            fold_results.append(best_val_loss)
+            print(f"\n=> Fold {fold+1} Best Validation R-Hit: {best_val_r_hit:.5f} (Loss: {avg_val_loss:.5f})")
+            fold_results.append(best_val_r_hit)
             
         print(f"\n✅ All 5 Folds Training Completed!")
-        print(f"Average Validation Loss across all folds: {np.mean(fold_results):.5f}")
+        print(f"Average Validation R-Hit across all folds: {np.mean(fold_results):.5f}")
 
 if __name__ == "__main__":
     seed_everything(42)
