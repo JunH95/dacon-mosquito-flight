@@ -50,12 +50,12 @@ class MosquitoTrajectoryDataset(Dataset):
         # CSV 파일 로드 (shape: 11, 4)
         df = pd.read_csv(file_path)
         
-        # NumPy 배열로 변환 후 텐서로 변환
-        X = torch.tensor(df.values, dtype=torch.float32)
+        # NumPy 배열로 변환 시 명시적으로 float32로 캐스팅 후 텐서로 변환
+        X = torch.tensor(df.values.astype(np.float32), dtype=torch.float32)
         
         if self.mode == 'train':
-            # 타겟 (x, y, z)
-            target = self.labels_df.iloc[idx][['x', 'y', 'z']].values
+            # 타겟 (x, y, z) 명시적 형변환
+            target = self.labels_df.iloc[idx][['x', 'y', 'z']].values.astype(np.float32)
             y = torch.tensor(target, dtype=torch.float32)
             return X, y
         else:
