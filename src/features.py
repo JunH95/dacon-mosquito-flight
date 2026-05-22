@@ -60,6 +60,22 @@ def extract_features_lgb(trajectory: np.ndarray) -> np.ndarray:
     
     return features
 
+def extract_features_lstm(trajectory: np.ndarray) -> np.ndarray:
+    """
+    LSTM 모델 학습을 위해 시계열 데이터를 (11, 5) Feature Sequence로 변환합니다.
+    기본 3D 좌표 (x, y, z)에 속도(Velocity)와 가속도(Acceleration)를 결합합니다.
+    """
+    coords = trajectory[:, 1:] # (11, 3)
+    vel, accel = calculate_velocity_accel(trajectory) # vel: (10,), accel: (9,)
+    
+    # 길이를 11로 맞추기 위한 패딩 처리 (가장 첫 번째 값을 복사하여 채움)
+    vel_padded = np.insert(vel, 0, vel[0]) # (11,)
+    accel_padded = np.insert(accel, 0, [accel[0], accel[0]]) # (11,)
+    
+    # 열(Column) 방향으로 결합하여 (11, 5) 형태의 피처 시퀀스 생성
+    features = np.column_stack((coords, vel_padded, accel_padded))
+    return features
+
 if __name__ == "__main__":
     # 테스트용 더미 궤적 데이터 (11, 4)
     dummy_trajectory = np.zeros((11, 4))

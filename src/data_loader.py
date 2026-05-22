@@ -4,6 +4,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
 from typing import Tuple, Optional
+from features import extract_features_lstm
 
 class MosquitoTrajectoryDataset(Dataset):
     """
@@ -50,8 +51,11 @@ class MosquitoTrajectoryDataset(Dataset):
         # CSV 파일 로드 (shape: 11, 4)
         df = pd.read_csv(file_path)
         
+        # 피처 엔지니어링 (속도, 가속도 파생변수 추가 -> shape: 11, 5)
+        feats = extract_features_lstm(df.values)
+        
         # NumPy 배열로 변환 시 명시적으로 float32로 캐스팅 후 텐서로 변환
-        X = torch.tensor(df.values.astype(np.float32), dtype=torch.float32)
+        X = torch.tensor(feats.astype(np.float32), dtype=torch.float32)
         
         if self.mode == 'train':
             # 타겟 (x, y, z) 명시적 형변환
