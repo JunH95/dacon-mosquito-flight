@@ -52,10 +52,10 @@ def run_inference(data_dir: str, model_path: str, output_path: str):
 
 if __name__ == "__main__":
     # 데이터 폴더와 모델 저장 폴더 (상대 경로)
-    data_dir = '../data'
-    model_dir = '../models'
+    data_dir = 'data'
+    model_dir = 'models'
     
-    # ../models/ 폴더에서 가장 최근에 생성된 .pth 파일 찾기
+    # models/ 폴더에서 가장 최근에 생성된 .pth 파일 찾기
     if not os.path.exists(model_dir):
         print(f"Error: Model directory '{model_dir}' does not exist. Please train the model first.")
     else:
@@ -68,5 +68,5 @@ if __name__ == "__main__":
             print(f"Loading model: {latest_model}")
             
             # 산출물 경로 (루트 디렉토리)
-            output_file = '../submission.csv'
+            output_file = 'submission.csv'
             run_inference(data_dir=data_dir, model_path=latest_model, output_path=output_file)

@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # 학습 하이퍼파라미터 설정 (Colab vs Local)
     # Colab에서 실행 시 data_dir을 '/content/drive/MyDrive/...' 형태로 덮어쓸 수 있습니다.
     default_config = {
-        'data_dir': '../data',
+        'data_dir': 'data',
         'epochs': 10,
         'batch_size': 32,
         'learning_rate': 1e-3,
@@ -106,5 +106,5 @@ if __name__ == "__main__":
     # 로컬 테스트용 환경변수 (실제 훈련이 아니므로 로깅 생략)
     # os.environ["WANDB_MODE"] = "offline"
     
-    # 학습 실행을 원할 경우 주석 해제 (로컬엔 데이터가 없을 수 있으므로 Colab 권장)
-    # train_model(config=default_config)
+    # 학습 실행
+    train_model(config=default_config)
