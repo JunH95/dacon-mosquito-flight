@@ -30,11 +30,8 @@
 ## 5. Getting Started
 ```bash
 # 가상환경 생성 및 활성화
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
+conda create -n dacon-mosquito python=3.10
+conda activate dacon-mosquito
 
 # 패키지 설치
 pip install -r requirements.txt
