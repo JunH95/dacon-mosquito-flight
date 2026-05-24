@@ -43,7 +43,8 @@ pip install -r requirements.txt
 | Version | Date | Model Type | Key Changes & Rationale | Public Score | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **V1.0** | 2026-05-22 | PyTorch LSTM | **[Baseline]** x, y, z 3D 좌표만 단순 입력으로 사용. 파생 변수 부재 및 정규화 미적용으로 인해 인공지능이 유의미한 패턴을 찾지 못함. (학습 10 Epoch) | 0.0278 | 완료 |
-| **V2.0** | 2026-05-22 | PyTorch LSTM | **[Feature & Scale Up]**<br>- 1) 속도 및 가속도 파생변수 주입 (차원 3 -> 5)<br>- 2) nn.BatchNorm1d를 삽입하여 GPU 내부에서 실시간 피처 정규화(Scaling) 수행<br>- 3) 5-Fold 교차 검증 앙상블 적용으로 과적합 방지<br>- 4) Epoch 수를 10에서 50으로 상향 | Testing | 완료 |
+| **V2.0** | 2026-05-22 | PyTorch LSTM | **[Feature & Scale Up]**<br>- 1) 속도 및 가속도 파생변수 주입 (차원 3 -> 5)<br>- 2) nn.BatchNorm1d를 삽입하여 GPU 내부에서 실시간 피처 정규화(Scaling) 수행<br>- 3) 5-Fold 교차 검증 앙상블 적용으로 과적합 방지<br>- 4) Epoch 수를 10에서 50으로 상향 | 0.0278 | 완료 |
+| **V3.0** | 2026-05-24 | PyTorch LSTM | **[Evaluation Metric Alignment]**<br>- 로컬 환경에 대회 공식 지표인 **R-Hit@1cm** 산식을 내장<br>- 베스트 모델 저장 기준을 단순 MSE Loss가 아닌 **Validation R-Hit** 최고 점수로 변경하여, '가장 많이 맞춘 가중치'를 최종적으로 보존 | 측정 대기 | 완료 |
 
 ---
-*추후 앙상블 기법(LightGBM) 추가 또는 하이퍼파라미터 튜닝 시 이 표에 V3, V4로 계속 기록을 누적합니다.*
+*추후 앙상블 기법(LightGBM) 추가 또는 하이퍼파라미터 튜닝 시 이 표에 V4, V5로 계속 기록을 누적합니다.*
